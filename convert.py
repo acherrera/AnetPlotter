@@ -7,7 +7,7 @@ from helpers.processing import (process_start, strip_coords,
 
 
 
-def main(input_data):
+def convert_main(input_data):
 
     data_length = len(input_data)
     tracker = data_tracker(input_data)
@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     # Create the new list
 
-    new_list = main(input_data)
+    new_list = convert_main(input_data)
 
     converted_dir = './samples'
     if not os.path.exists(converted_dir):
