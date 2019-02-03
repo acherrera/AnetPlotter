@@ -19,6 +19,9 @@ def convert_main(input_data):
         if 'G0' in current_move:
             if not tracker.found_first:
                 process_start(tracker)
+            elif tracker.head_raised:
+                # Multiple G0 Moves
+                tracker.new_code.append(tracker.current_move())
             else:
                 process_normal(tracker)
 
