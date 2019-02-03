@@ -3,35 +3,36 @@ import sys
 import os
 # May not be needed
 from helpers.processing import (process_start, strip_coords,
-        get_distance, data_tracker, process_normal, lower_head)
+        get_distance, data_tracker, process_normal, lower_head,
+        standard_processing)
 
 
 
 def convert_main(input_data):
 
+    DISTANCE_THRESHOLD = 0.2 # Distance in mm to raise if greater
     data_length = len(input_data)
     tracker = data_tracker(input_data)
+    move_dist = None
 
     while (tracker.index) < data_length:
         # Index value is the value currently being examined
         current_move = tracker.current_move()
 
-        if 'G0' in current_move:
-            if not tracker.found_first:
-                process_start(tracker)
-            elif tracker.head_raised:
-                # Multiple G0 Moves
-                tracker.new_code.append(tracker.current_move())
+        # Find distance of move
+        if  (('G0' in current_move or 'G1' in current_move) and
+            ('G0' in tracker.postion or 'G1'in tracker.postion)
+            and tracker.found_first):
+            move_dist = get_distance(tracker.postion, current_move)
+            if move_dist < DISTANCE_THRESHOLD:
+                tracker.new_code.append(current_move)
             else:
-                process_normal(tracker)
-
-        elif tracker.head_raised:
-            lower_head(tracker)
+                standard_processing(tracker)
 
         else:
-            tracker.new_code.append(tracker.current_move())
+            standard_processing(tracker)
 
-        tracker.update_move(input_data)
+        tracker.update_move()
         tracker.index += 1
 
     return tracker.new_code
@@ -41,7 +42,6 @@ if __name__ == "__main__":
 
     # file_name = sys.argv[1]
     file_name = './CJX_2_sample.gcode'
-    distance_threshold = 5 # Distance in mm to raise if greater
 
     input_data = []
     with open(file_name) as f:
