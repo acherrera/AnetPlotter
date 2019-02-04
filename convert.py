@@ -10,7 +10,7 @@ from helpers.processing import (process_start, strip_coords,
 
 def convert_main(input_data):
 
-    DISTANCE_THRESHOLD = 0.2 # Distance in mm to raise if greater
+    DISTANCE_THRESHOLD = 5 # Distance in mm to raise if greater
     data_length = len(input_data)
     tracker = data_tracker(input_data)
     move_dist = None
@@ -40,8 +40,8 @@ def convert_main(input_data):
 
 if __name__ == "__main__":
 
-    # file_name = sys.argv[1]
-    file_name = './CJX_2_sample.gcode'
+    file_name = sys.argv[1]
+    # file_name = './CJX_2_sample.gcode'
 
     input_data = []
     with open(file_name) as f:
@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     new_list = convert_main(input_data)
 
-    converted_dir = './samples'
+    converted_dir = '.'
     if not os.path.exists(converted_dir):
         os.mkdir(converted_dir)
 
