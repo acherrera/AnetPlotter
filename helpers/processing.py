@@ -7,9 +7,7 @@ class data_tracker():
         self.found_first = False
         self.head_raised = False
         self.index = 0
-        self.move_1 = None
-        self.move_2 = None
-        self.move_3 = None
+        self.postion = None
         self.new_code = []
         self.old_code = input_data
         self.RAISE_COMMANDS = [
@@ -31,15 +29,16 @@ class data_tracker():
     def current_move(self):
         return self.old_code[self.index]
 
-    def update_move(self, raw_data):
+    def update_move(self):
         """
-            shift moves back one
+            Updates the current position. Note that this technically is the
+            previous move, but can be used for finding the distance of the next
+            move using the 'get_distance' method
             Args:
-                new_move(str): New move to add
+                None
+
         """
-        self.move_3 = self.move_2
-        self.move_2 = self.move_1
-        self.move_1 = raw_data[self.index]
+        self.postion = self.current_move()
 
 
 def strip_coords(command):
@@ -109,8 +108,33 @@ def process_normal(tracker):
     tracker.new_code.append(tracker.current_move())
 
 
+
 def lower_head(tracker):
     tracker.head_raised = False
     for i in tracker.LOWER_COMMANDS:
         tracker.new_code.append(i)
     tracker.new_code.append(tracker.current_move())
+
+
+def standard_processing(tracker):
+    """
+        Process the data without checking distances
+        Args:
+            tracker: (Data_tracker) Object to keep track of processed data
+    """
+    current_move = tracker.current_move()
+    if 'G0' in current_move:
+        if not tracker.found_first:
+            process_start(tracker)
+        elif tracker.head_raised:
+            # Multiple G0 Moves
+            tracker.new_code.append(current_move)
+        else:
+            process_normal(tracker)
+
+    elif tracker.head_raised:
+        lower_head(tracker)
+
+    else:
+        tracker.new_code.append(current_move)
+
