@@ -25,7 +25,10 @@ def convert_main(input_data):
             and tracker.found_first):
             move_dist = get_distance(tracker.postion, current_move)
             if move_dist < DISTANCE_THRESHOLD:
-                tracker.new_code.append(current_move)
+                if tracker.head_raised and 'G1' in current_move:
+                    lower_head(tracker)
+                else:
+                    tracker.new_code.append(current_move)
             else:
                 standard_processing(tracker)
 
